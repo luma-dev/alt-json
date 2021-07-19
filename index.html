@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="ALT JSON Converter" />
+    <link rel="stylesheet" href="/src/style.css" />
+    <title>Starter Snowpack App</title>
+  </head>
+  <body>
+    <h1>ALT JSON Converter</h1>
+    <div id="two-pane">
+      <div id="left-container">
+        <div class="header">
+          <select id="left-select" data-alt-json-options>
+          <option value="json">JSON</option>
+          </select>
+        </div>
+        <div class="editor-container" id="left"></div>
+      </div>
+      <div id="right-container">
+        <div class="header">
+          <select id="right-select" data-alt-json-options>
+          <option value="json">JSON</option>
+          </select>
+        </div>
+        <div class="editor-container" id="right"></div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/index.js"></script>
+  </body>
+</html>
