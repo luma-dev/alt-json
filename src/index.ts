@@ -44,12 +44,20 @@ const convertTo = (json: ReadonlyJSONValue, langTo: string): string => {
 interface EditorSet {
   selectEl: HTMLSelectElement;
   editorEl: HTMLElement;
+  npmEl: HTMLAnchorElement;
+  npmIconEl: HTMLImageElement;
   editor: monaco.editor.IStandaloneCodeEditor;
   keyLang: string;
   defaultLang: string;
 }
 
-const initEditor = (selectId: string, editorId: string, keyLang: string, defaultLang: string): EditorSet => {
+const initEditor = (
+  selectId: string,
+  editorId: string,
+  npmId: string,
+  keyLang: string,
+  defaultLang: string,
+): EditorSet => {
   const selectEl = document.querySelector(`#${selectId}`);
   if (!(selectEl instanceof HTMLSelectElement)) {
     throw new Error(`no #${selectId}`);
@@ -60,6 +68,16 @@ const initEditor = (selectId: string, editorId: string, keyLang: string, default
     throw new Error(`no #${editorId}`);
   }
 
+  const npmEl = document.querySelector(`#${npmId}`);
+  if (!(npmEl instanceof HTMLAnchorElement)) {
+    throw new Error(`no #${npmId}`);
+  }
+
+  const npmIconEl = npmEl.querySelector(`img`);
+  if (!(npmIconEl instanceof HTMLImageElement)) {
+    throw new Error(`no #${npmId} img`);
+  }
+
   const editor = monaco.editor.create(editorEl, {
     value: '',
     language: 'json',
@@ -68,6 +86,8 @@ const initEditor = (selectId: string, editorId: string, keyLang: string, default
   return {
     selectEl,
     editorEl,
+    npmEl,
+    npmIconEl,
     editor,
     keyLang,
     defaultLang,
@@ -75,11 +95,23 @@ const initEditor = (selectId: string, editorId: string, keyLang: string, default
 };
 
 const setLang = (set: EditorSet, lang: string): void => {
-  // eslint-disable-next-line no-param-reassign
-  set.selectEl.value = lang;
+  /* eslint-disable no-param-reassign */
+  if (set.selectEl.value !== lang) set.selectEl.value = lang;
+  const alt = altJSONs.find(a => a.name === lang);
+  if (alt && alt.packageName) {
+    set.npmIconEl.src = '/npm-icon.svg';
+    set.npmEl.title = alt.packageName;
+    set.npmEl.href = `https://npmjs.com/package/${alt.packageName}`;
+  } else {
+    set.npmIconEl.src = '/npm-icon-grey.svg';
+    set.npmEl.removeAttribute('title');
+    set.npmEl.removeAttribute('href');
+  }
   const model = set.editor.getModel();
   if (!model) return;
   monaco.editor.setModelLanguage(model, lang);
+  localStorage.setItem(set.keyLang, lang);
+  /* eslint-enable no-param-reassign */
 };
 
 const getLang = (set: EditorSet): string => {
@@ -101,8 +133,8 @@ const main = async () => {
   initMonaco();
   initAltJSONOptions();
 
-  const left = initEditor('left-select', 'left', localStorageKeys.leftLang, 'json');
-  const right = initEditor('right-select', 'right', localStorageKeys.rightLang, 'yaml');
+  const left = initEditor('left-select', 'left', 'left-npm', localStorageKeys.leftLang, 'json');
+  const right = initEditor('right-select', 'right', 'right-npm', localStorageKeys.rightLang, 'yaml');
   const { editor: editorLeft } = left;
   const { editor: editorRight } = right;
 
@@ -219,10 +251,7 @@ const main = async () => {
       handling = true;
       try {
         const lang = getLang(set);
-        localStorage.setItem(set.keyLang, lang);
-        const model = set.editor.getModel();
-        if (!model) return;
-        monaco.editor.setModelLanguage(model, lang);
+        setLang(set, lang);
         update(set);
       } finally {
         handling = false;
