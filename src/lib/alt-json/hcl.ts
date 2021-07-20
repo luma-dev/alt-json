@@ -1,12 +1,13 @@
-import * as HCL from '../../../prebuild/js-hcl-parser/dist/hcl.js';
+import HCL from '../../../.prebuild-dynamic/js-hcl-parser/dist/hcl.js';
 import type { AltJSON } from './alt-json.d';
-window.
 
 const hcl: AltJSON = {
   name: 'hcl',
   display: 'HCL',
-  toJSON: str => HCL.parse(str),
-  fromJSON: value => HCL.stringify(value),
+  packageName: 'js-hcl-parser',
+  packageObject: HCL,
+  toJSON: str => JSON.parse(HCL.parse(str)),
+  fromJSON: value => HCL.stringify(JSON.stringify(value)),
 };
 
 export default hcl;

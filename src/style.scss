@@ -12,6 +12,15 @@ body {
   overflow: hidden;
 }
 
+h1 {
+  text-align: center;
+}
+
+[data-alt-json-options] {
+  width: 100%;
+  height: 100%;
+}
+
 #two-pane {
   display: flex;
   flex-flow: row;

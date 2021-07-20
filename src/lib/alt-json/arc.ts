@@ -1,11 +1,13 @@
-import * as parse from '@architect/parser';
+import * as Architect from '@architect/parser';
 import type { AltJSON } from './alt-json.d';
 
-const hcl: AltJSON = {
+const arc: AltJSON = {
   name: 'arc',
   display: 'Architect',
-  toJSON: str => parse(str),
-  fromJSON: value => parse.stringify(value),
+  packageName: '@architect/parser',
+  packageObject: Architect,
+  toJSON: str => Architect.default(str),
+  fromJSON: value => Architect.stringify(value),
 };
 
-export default hcl;
+export default arc;

@@ -8,3 +8,9 @@ declare module 'monaco-editor/esm/*';
 interface Window {
   MonacoEnvironment: typeof MonacoEnvironment;
 }
+
+interface ImportMeta {
+  env: {
+    MODE: 'development' | 'production';
+  };
+}

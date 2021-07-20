@@ -4,16 +4,17 @@ const fs = require('fs');
 
 const isProd = process.env.NODE_ENV === 'production';
 
-const distDir = path.resolve(__dirname, '../prebuild');
+const staticDir = path.resolve(__dirname, '../.prebuild-static');
+const dynamicDir = path.resolve(__dirname, '../.prebuild-dynamic');
 
 const clean = async () => {
-  await fs.promises.rmdir(distDir, { recursive: true });
+  await fs.promises.rmdir(staticDir, { recursive: true });
+  await fs.promises.rmdir(dynamicDir, { recursive: true });
 };
 
 const main = async () => {
   await clean();
-  const outdir = path.resolve(distDir);
-  await fs.promises.mkdir(outdir, { recursive: true });
+  await fs.promises.mkdir(staticDir, { recursive: true });
 
   await esbuild.build({
     entryPoints: [
@@ -21,29 +22,51 @@ const main = async () => {
       path.resolve(__dirname, '../node_modules/monaco-editor/esm/vs/language/json/json.worker.js'),
       path.resolve(__dirname, '../node_modules/monaco-editor/esm/vs/language/css/css.worker.js'),
       path.resolve(__dirname, '../node_modules/monaco-editor/esm/vs/language/html/html.worker.js'),
-      path.resolve(__dirname, '../node_modules/js-hcl-parser/dist/hcl.js'),
+      path.resolve(__dirname, '../node_modules/monaco-editor/esm/vs/language/typescript/ts.worker.js'),
     ],
-    outdir,
+    outdir: path.resolve(staticDir, 'monaco-editor/esm/vs'),
     bundle: true,
     minify: isProd,
     sourcemap: isProd ? false : 'inline',
   });
 
-  await fs.promises.copyFile(path.resolve(__dirname, '../node_modules/monaco-editor/esm/vs/base/browser/ui/codicons/codicon/codicon.ttf'), path.resolve(distDir, 'codicon.ttf'));
+  await esbuild.build({
+    entryPoints: [
+      path.resolve(__dirname, '../node_modules/js-hcl-parser/dist/hcl.js'),
+    ],
+    outdir: path.resolve(dynamicDir, 'js-hcl-parser/dist'),
+    format: 'esm',
+    bundle: true,
+    minify: isProd,
+    sourcemap: isProd ? false : 'inline',
+  });
 
-  const copyDir = async (rootFrom, from, to) => {
-    (await fs.promises.readdir(from)).map(async (f) => {
-      if ((await fs.promises.stat(f)).isFile()) {
-        const r = path.relativ(rootFrom, path.relative(rootFrom, path.join(from, f)));
-        await fs.promises.copyFile(r);
-      } else {
-        await copyDir(rootFrom, path.resolve(from, f));
-      }
-    });
+  await fs.promises.copyFile(path.resolve(__dirname, '../node_modules/monaco-editor/esm/vs/base/browser/ui/codicons/codicon/codicon.ttf'), path.resolve(staticDir, 'codicon.ttf'));
+
+  const sync = async (toDir, copyFromRoot, copyFrom) => {
+    const rel = path.relative(copyFromRoot, copyFrom);
+    const to = path.resolve(toDir, rel);
+    if ((await fs.promises.stat(copyFrom)).isFile()) {
+      await fs.promises.mkdir(path.dirname(to), { recursive: true });
+      await fs.promises.copyFile(copyFrom, to);
+    } else {
+      (await fs.promises.readdir(copyFrom)).map(async (f) => {
+        await sync(toDir, copyFromRoot, path.resolve(copyFrom, f));
+      });
+    }
   };
-  const typesDir = path.resolve(__dirname, 'prebuild-types');
-  copyDir(typesDir, typesDir, distDir);
-  await fs.promises.copyFile(path.resolve(__dirname, '../node_modules/monaco-editor/esm/vs/base/browser/ui/codicons/codicon/codicon.ttf'), path.resolve(distDir, 'codicon.ttf'));
+
+  // await sync(
+  //   dynamicDir,
+  //   path.resolve(__dirname, '../node_modules'),
+  //   path.resolve(__dirname, '../node_modules/js-hcl-parser/dist/hcl.js'),
+  // );
+
+  await sync(
+    dynamicDir,
+    path.resolve(__dirname, '../prebuild-types'),
+    path.resolve(__dirname, '../prebuild-types'),
+  );
 };
 
 void main();

@@ -4,6 +4,8 @@ import type { AltJSON } from './alt-json.d';
 const toml: AltJSON = {
   name: 'toml',
   display: 'TOML',
+  packageName: '@iarna/toml',
+  packageObject: TOML,
   toJSON: str => TOML.parse(str) as JSONValue,
   fromJSON: value => {
     if (value === null) return '# TOML does not support top-level null';

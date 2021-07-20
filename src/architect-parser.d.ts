@@ -3,5 +3,5 @@ declare module '@architect/parser' {
     stringify: (v: JSONValue) => string;
     (s: string): JSONValue;
   };
-  export = parse;
+  export default parse;
 }

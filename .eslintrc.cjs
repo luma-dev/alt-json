@@ -1,6 +1,6 @@
 const path = require('path');
 
-/** @type import("eslint").parserOptions */
+/** @type {import("eslint").parserOptions} */
 module.exports = {
   ignorePatterns: [],
 
@@ -44,7 +44,7 @@ module.exports = {
       },
     },
     {
-      files: '*.ts',
+      files: ['*.ts'],
 
       parserOptions: { project: path.resolve(__dirname, 'tsconfig.json') },
 

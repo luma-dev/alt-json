@@ -1,7 +1,7 @@
 const initMonaco = (): void => {
   window.MonacoEnvironment = {
     getWorkerUrl(_moduleId, label) {
-      if (label === 'json') {
+      if (label === 'json' || label === 'json5' || label === 'jsonc') {
         return '/monaco-editor/esm/vs/language/json/json.worker.js';
       }
       if (label === 'css' || label === 'scss' || label === 'less') {
