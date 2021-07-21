@@ -10,11 +10,12 @@ body {
   padding: 0;
   margin: 0;
   overflow: hidden;
-  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 h1 {
   text-align: center;
+  color: #0cb4ff;
 
   &::before {
     content: '<';
@@ -24,10 +25,12 @@ h1 {
     content: '/>';
     margin-left: var(--margin);
   }
-  &::before, &::after {
+  &::before,
+  &::after {
     --margin: 0.2em;
+    color: black;
     font-size: 1.8em;
-    display:inline-block;
+    display: inline-block;
     transform: translateY(0.12em);
   }
 }
@@ -62,9 +65,13 @@ h1 {
       height: 1.4rem;
       flex-shrink: 0;
 
-      > .npm {
+      > a.npm {
         width: 1.4rem;
         height: 1.4rem;
+
+        &:not([href]) {
+          filter: grayscale(1);
+        }
       }
     }
     > .editor-container {

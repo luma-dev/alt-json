@@ -8,13 +8,15 @@ const parserOwner = 'alt-json';
 const defaultJSON: ReadonlyJSONValue = {
   hello: [
     {
-      world: ['world', 'from'],
+      world: {
+        from: ['your', 'hands'],
+      },
     },
   ],
-  your: [
+  in: [
     {
-      hands: {
-        in: 'seconds.',
+      seconds: {
+        anywhere: 'anytime.',
       },
     },
   ],
@@ -25,6 +27,7 @@ const localStorageKeys = Object.freeze({
   rightLang: 'rightLang',
   lastLang: 'lastLang',
   lastCode: 'lastCode',
+  lastValid: 'lastValid',
 });
 
 const convertFrom = (langFrom: string, str: string): JSONValue => {
@@ -98,18 +101,16 @@ const setLang = (set: EditorSet, lang: string): void => {
   /* eslint-disable no-param-reassign */
   if (set.selectEl.value !== lang) set.selectEl.value = lang;
   const alt = altJSONs.find(a => a.name === lang);
+  const model = set.editor.getModel();
+  if (!model) return;
   if (alt && alt.packageName) {
-    set.npmIconEl.src = '/npm-icon.svg';
     set.npmEl.title = alt.packageName;
     set.npmEl.href = `https://npmjs.com/package/${alt.packageName}`;
+    monaco.editor.setModelLanguage(model, alt.id);
   } else {
-    set.npmIconEl.src = '/npm-icon-grey.svg';
     set.npmEl.removeAttribute('title');
     set.npmEl.removeAttribute('href');
   }
-  const model = set.editor.getModel();
-  if (!model) return;
-  monaco.editor.setModelLanguage(model, lang);
   localStorage.setItem(set.keyLang, lang);
   /* eslint-enable no-param-reassign */
 };
@@ -118,15 +119,38 @@ const getLang = (set: EditorSet): string => {
   return set.selectEl.value;
 };
 
-const main = async () => {
+const updateErrors = (set: EditorSet): string | null => {
+  const model = set.editor.getModel();
+  if (!model) return null;
+  const lang = getLang(set);
+  const code = model.getValue();
+  monaco.editor.setModelMarkers(model, parserOwner, []);
+  try {
+    return JSON.stringify(convertFrom(lang, code));
+  } catch (e: unknown) {
+    monaco.editor.setModelMarkers(model, parserOwner, [
+      {
+        severity: monaco.MarkerSeverity.Error,
+        message: String(e),
+        startLineNumber: 1,
+        endLineNumber: model.getLineCount(),
+        startColumn: 0,
+        endColumn: 0,
+      },
+    ]);
+    return null;
+  }
+};
+
+const main = async (): Promise<void> => {
   greeting();
 
+  let lastValid: string | null = localStorage.getItem(localStorageKeys.lastValid);
   let lastLang: string | null = localStorage.getItem(localStorageKeys.lastLang);
   let lastCode: string | null = localStorage.getItem(localStorageKeys.lastCode);
 
-  if (lastLang === null || lastCode === null) {
-    lastLang = 'json';
-    lastCode = JSON.stringify(defaultJSON, undefined, 2);
+  if (lastValid === null) {
+    lastValid = JSON.stringify(defaultJSON, undefined, 2);
   }
 
   expose({ monaco });
@@ -140,43 +164,37 @@ const main = async () => {
 
   const update = (set: EditorSet) => {
     const model = set.editor.getModel();
-    if (!model) {
-      if (import.meta.env.MODE === 'development') {
-        // eslint-disable-next-line no-console
-        console.warn('No model.');
-      }
-      return;
-    }
-    if (lastLang === null) return;
-    if (lastCode === null) return;
+    if (!model) return;
     try {
-      if (lastLang === getLang(set)) {
+      const lang = getLang(set);
+      if (lastLang === lang && lastCode !== null) {
         model.setValue(lastCode);
-      } else {
-        const lastJSON = (() => {
-          try {
-            return convertFrom(lastLang, lastCode);
-          } catch (e: unknown) {
-            if (import.meta.env.MODE === 'development') {
-              // eslint-disable-next-line no-console
-              console.error(e);
-            }
-            return defaultJSON;
-          }
-        })();
-        const code = (() => {
-          try {
-            return convertTo(lastJSON, set.selectEl.value);
-          } catch (e: unknown) {
-            if (import.meta.env.MODE === 'development') {
-              // eslint-disable-next-line no-console
-              console.error(e);
-            }
-            return `Error while converting JSON to string:\n${e}`;
-          }
-        })();
-        model.setValue(code);
+        return;
       }
+      if (lastValid === null) return;
+      const lastJSON = (() => {
+        try {
+          return JSON.parse(lastValid);
+        } catch (e: unknown) {
+          if (import.meta.env.MODE === 'development') {
+            // eslint-disable-next-line no-console
+            console.error(e);
+          }
+          return defaultJSON;
+        }
+      })();
+      const code = (() => {
+        try {
+          return convertTo(lastJSON, set.selectEl.value);
+        } catch (e: unknown) {
+          if (import.meta.env.MODE === 'development') {
+            // eslint-disable-next-line no-console
+            console.error(e);
+          }
+          return `Error while converting JSON to string:\n${e}`;
+        }
+      })();
+      model.setValue(code);
     } catch (e: unknown) {
       if (import.meta.env.MODE === 'development') {
         // eslint-disable-next-line no-console
@@ -202,6 +220,7 @@ const main = async () => {
           setLang(set, lang);
         }
         update(set);
+        updateErrors(set);
       } catch (e: unknown) {
         if (import.meta.env.MODE === 'development') {
           // eslint-disable-next-line no-console
@@ -220,26 +239,14 @@ const main = async () => {
         if (!model) return;
         const lang = getLang(set);
         const code = model.getValue();
-        monaco.editor.setModelMarkers(model, parserOwner, []);
-        try {
-          convertFrom(lang, code);
-        } catch (e: unknown) {
-          monaco.editor.setModelMarkers(model, parserOwner, [
-            {
-              severity: monaco.MarkerSeverity.Error,
-              message: String(e),
-              startLineNumber: 1,
-              endLineNumber: model.getLineCount(),
-              startColumn: 0,
-              endColumn: 0,
-            },
-          ]);
-          return;
-        }
         lastLang = lang;
         lastCode = code;
         localStorage.setItem(localStorageKeys.lastLang, lastLang);
         localStorage.setItem(localStorageKeys.lastCode, lastCode);
+        const valid = updateErrors(set);
+        if (valid === null) return;
+        lastValid = valid;
+        localStorage.setItem(localStorageKeys.lastValid, lastValid);
         update(another);
       } finally {
         handling = false;

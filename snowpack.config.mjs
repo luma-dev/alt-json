@@ -5,7 +5,7 @@
 const config = {
   mount: {
     '.prebuild-static': { url: '/', static: true, resolve: false },
-    public: { url: '/', static: true, resolve: false },
+    static: { url: '/', static: true, resolve: false },
     '': '/',
   },
   plugins: [

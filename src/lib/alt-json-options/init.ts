@@ -1,6 +1,6 @@
 import altJSONs from '../alt-json';
 
-const initAltJSONOptions = () => {
+const initAltJSONOptions = (): void => {
   const ds = Array.from(document.querySelectorAll('[data-alt-json-options]')).filter(
     (el): el is HTMLElement => el instanceof HTMLElement,
   );

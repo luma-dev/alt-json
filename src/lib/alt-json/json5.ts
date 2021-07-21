@@ -2,6 +2,7 @@ import JSON5 from 'json5';
 import type { AltJSON } from './alt-json.d';
 
 const json5: AltJSON = {
+  id: 'json5',
   name: 'json5',
   display: 'JSON5',
   packageName: 'json5',

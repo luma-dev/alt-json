@@ -1,3 +1,6 @@
+import registerArcLanguage from './languages/arc';
+import registerTOMLLanguage from './languages/toml';
+
 const initMonaco = (): void => {
   window.MonacoEnvironment = {
     getWorkerUrl(_moduleId, label) {
@@ -16,6 +19,8 @@ const initMonaco = (): void => {
       return '/monaco-editor/esm/vs/editor/editor.worker.js';
     },
   };
+  registerArcLanguage();
+  registerTOMLLanguage();
 };
 
 export default initMonaco;

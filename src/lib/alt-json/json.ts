@@ -1,6 +1,7 @@
 import type { AltJSON } from './alt-json.d';
 
 const json: AltJSON = {
+  id: 'json',
   name: 'json',
   display: 'JSON',
   packageName: null,

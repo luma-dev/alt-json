@@ -2,6 +2,7 @@ import * as TOML from '@iarna/toml';
 import type { AltJSON } from './alt-json.d';
 
 const toml: AltJSON = {
+  id: 'toml',
   name: 'toml',
   display: 'TOML',
   packageName: '@iarna/toml',

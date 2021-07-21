@@ -1,7 +1,4 @@
 declare module '@architect/parser' {
-  declare const parse: {
-    stringify: (v: JSONValue) => string;
-    (s: string): JSONValue;
-  };
-  export default parse;
+  export default function (s: string): JSONValue;
+  export function stringify(v: ReadonlyJSONValue): string;
 }

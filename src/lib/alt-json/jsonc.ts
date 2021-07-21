@@ -2,6 +2,7 @@ import * as JSONC from 'jsonc-parser';
 import type { AltJSON } from './alt-json.d';
 
 const jsonc: AltJSON = {
+  id: 'json',
   name: 'jsonc',
   display: 'JSONC',
   packageName: 'jsonc-parser',

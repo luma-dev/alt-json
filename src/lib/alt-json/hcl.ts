@@ -2,6 +2,7 @@ import HCL from '../../../.prebuild-dynamic/js-hcl-parser/dist/hcl.js';
 import type { AltJSON } from './alt-json.d';
 
 const hcl: AltJSON = {
+  id: 'hcl',
   name: 'hcl',
   display: 'HCL',
   packageName: 'js-hcl-parser',
