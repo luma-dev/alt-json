@@ -12,7 +12,16 @@
     <title>ALT JSON Playground</title>
   </head>
   <body>
-    <h1>ALT JSON Playground</h1>
+    <main>
+      <div class="title">
+        <h1><a href="https://github.com/luma-dev/alt-json" target="_blank">ALT JSON Playground</a></h1>
+        <span class="prop">theme</span><span>=</span>
+        <select id="theme" name="theme" value="system">
+          <option value="system">system</option>
+          <option value="light">light</option>
+          <option value="dark">dark</option>
+        </select>
+      </div>
     <div id="two-pane">
       <div id="left-container">
         <div class="header">
@@ -33,6 +42,7 @@
         <div class="editor-container" id="right"></div>
       </div>
     </div>
+    </main>
 
     <script type="module" src="/src/index.js"></script>
   </body>

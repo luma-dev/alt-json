@@ -4,7 +4,7 @@
 /** @type {import("snowpack").SnowpackUserConfig } */
 const config = {
   mount: {
-    '.prebuild-static': { url: '/', static: true, resolve: false },
+    _prebuild_static: { url: '/', static: true, resolve: false },
     static: { url: '/', static: true, resolve: false },
     '': '/',
   },

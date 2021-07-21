@@ -3,6 +3,9 @@ import initMonaco from './lib/monaco/init';
 import initAltJSONOptions from './lib/alt-json-options/init';
 import altJSONs from './lib/alt-json';
 import { expose, exposeAllAltJSONs, greeting } from './greeting';
+import { isDarkTheme } from './dark-theme';
+import { lumaDarkThemeName } from './lib/monaco/themes/dark';
+import { lumaLightThemeName } from './lib/monaco/themes/light';
 
 const parserOwner = 'alt-json';
 const defaultJSON: ReadonlyJSONValue = {
@@ -23,6 +26,7 @@ const defaultJSON: ReadonlyJSONValue = {
 };
 
 const localStorageKeys = Object.freeze({
+  theme: 'theme',
   leftLang: 'leftLang',
   rightLang: 'rightLang',
   lastLang: 'lastLang',
@@ -42,6 +46,49 @@ const convertTo = (json: ReadonlyJSONValue, langTo: string): string => {
   if (!altTo) throw new Error(`langTo=${langTo} not defined`);
   const to = altTo.fromJSON(json);
   return to;
+};
+
+let theme = localStorage.getItem(localStorageKeys.theme);
+
+const getMonacoTheme = (isDark: boolean): string => {
+  return isDark ? lumaDarkThemeName : lumaLightThemeName;
+};
+
+const updateTheme = (isDark: boolean): void => {
+  if (isDark) {
+    document.body.classList.add('is-dark');
+    document.body.classList.remove('is-light');
+  } else {
+    document.body.classList.remove('is-dark');
+    document.body.classList.add('is-light');
+  }
+  monaco.editor.setTheme(getMonacoTheme(isDark));
+};
+
+const getTheme = (): boolean => {
+  if (theme === 'light') return false;
+  if (theme === 'dark') return true;
+  return isDarkTheme();
+};
+
+const initTheme = () => {
+  const select = document.querySelector('#theme');
+  if (!(select instanceof HTMLSelectElement)) {
+    throw new Error('no #theme');
+  }
+  if (theme === 'light' || theme === 'dark') {
+    select.value = theme;
+  }
+  updateTheme(getTheme());
+  select.addEventListener('change', () => {
+    theme = select.value;
+    if (theme === 'light' || theme === 'dark') {
+      localStorage.setItem(localStorageKeys.theme, theme);
+    } else {
+      localStorage.removeItem(localStorageKeys.theme);
+    }
+    updateTheme(getTheme());
+  });
 };
 
 interface EditorSet {
@@ -84,6 +131,7 @@ const initEditor = (
   const editor = monaco.editor.create(editorEl, {
     value: '',
     language: 'json',
+    theme: getMonacoTheme(getTheme()),
   });
 
   return {
@@ -143,6 +191,8 @@ const updateErrors = (set: EditorSet): string | null => {
 };
 
 const main = async (): Promise<void> => {
+  initTheme();
+
   greeting();
 
   let lastValid: string | null = localStorage.getItem(localStorageKeys.lastValid);

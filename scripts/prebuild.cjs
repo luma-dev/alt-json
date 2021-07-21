@@ -4,8 +4,8 @@ const fs = require('fs');
 
 const isProd = process.env.NODE_ENV === 'production';
 
-const staticDir = path.resolve(__dirname, '../.prebuild-static');
-const dynamicDir = path.resolve(__dirname, '../.prebuild-dynamic');
+const staticDir = path.resolve(__dirname, '../_prebuild_static');
+const dynamicDir = path.resolve(__dirname, '../_prebuild_dynamic');
 
 const clean = async () => {
   await fs.promises.rmdir(staticDir, { recursive: true });
@@ -64,8 +64,8 @@ const main = async () => {
 
   await sync(
     dynamicDir,
-    path.resolve(__dirname, '../prebuild-types'),
-    path.resolve(__dirname, '../prebuild-types'),
+    path.resolve(__dirname, '../prebuild_types'),
+    path.resolve(__dirname, '../prebuild_types'),
   );
 };
 

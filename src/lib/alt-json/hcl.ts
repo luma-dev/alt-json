@@ -1,4 +1,4 @@
-import HCL from '../../../.prebuild-dynamic/js-hcl-parser/dist/hcl.js';
+import HCL from '../../../_prebuild_dynamic/js-hcl-parser/dist/hcl.js';
 import type { AltJSON } from './alt-json.d';
 
 const hcl: AltJSON = {
