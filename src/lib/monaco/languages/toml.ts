@@ -95,7 +95,6 @@ const registerTOMLLanguage = (): void => {
             {
               // bracket: '@open',
               token: 'bracket.square',
-              log: 'here1',
               next: '@valueArrayBody',
             },
           ],
