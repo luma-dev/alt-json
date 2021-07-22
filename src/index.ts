@@ -338,10 +338,15 @@ const main = async (): Promise<void> => {
         localStorage.setItem(localStorageKeys.lastLang, lastLang);
         localStorage.setItem(localStorageKeys.lastCode, lastCode);
         const valid = updateErrors(set);
-        if (valid === null) return;
-        lastValid = valid;
-        localStorage.setItem(localStorageKeys.lastValid, lastValid);
-        update(another, true);
+        if (lang === getLang(another)) {
+          update(another, true);
+          updateErrors(another);
+        } else {
+          if (valid === null) return;
+          lastValid = valid;
+          localStorage.setItem(localStorageKeys.lastValid, lastValid);
+          update(another, true);
+        }
       } finally {
         handling = false;
       }
