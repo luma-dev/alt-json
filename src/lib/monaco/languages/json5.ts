@@ -115,10 +115,8 @@ const registerJSON5Language = (): void => {
   };
 
   monaco.languages.register({ id });
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  monaco.languages.setMonarchTokensProvider(id, def as any);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  monaco.languages.setLanguageConfiguration(id, conf as any);
+  monaco.languages.setMonarchTokensProvider(id, def);
+  monaco.languages.setLanguageConfiguration(id, conf);
 };
 
 export default registerJSON5Language;
