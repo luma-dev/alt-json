@@ -4,16 +4,14 @@ import getRegexRanges from '../ranges/regex';
 
 const registerTOMLLanguage = (): void => {
   const id = 'toml';
-  const conf = {
+  const conf: monaco.languages.LanguageConfiguration = {
     brackets: [
       ['{', '}'],
       ['[', ']'],
-      ['(', ')'],
     ],
     autoClosingPairs: [
       { open: '{', close: '}' },
       { open: '[', close: ']' },
-      { open: '(', close: ')' },
       { open: '"', close: '"' },
       { open: "'", close: "'" },
       { open: '"""', close: '"""' },
@@ -22,12 +20,11 @@ const registerTOMLLanguage = (): void => {
     surroundingPairs: [
       { open: '{', close: '}' },
       { open: '[', close: ']' },
-      { open: '(', close: ')' },
       { open: '"', close: '"' },
       { open: "'", close: "'" },
     ],
   };
-  const def = {
+  const def: monaco.languages.IMonarchLanguage = {
     tokenPostfix: '.toml',
     brackets: [
       { token: 'delimiter.bracket', open: '{', close: '}' },
@@ -93,8 +90,8 @@ const registerTOMLLanguage = (): void => {
         {
           regex: /(=)(\s*)(\[)/,
           action: [
-            'delimiter',
-            'white',
+            { token: 'delimiter' },
+            { token: 'white' },
             {
               // bracket: '@open',
               token: 'bracket.square',
@@ -203,10 +200,8 @@ const registerTOMLLanguage = (): void => {
   };
 
   monaco.languages.register({ id });
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  monaco.languages.setMonarchTokensProvider(id, def as any);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  monaco.languages.setLanguageConfiguration(id, conf as any);
+  monaco.languages.setMonarchTokensProvider(id, def);
+  monaco.languages.setLanguageConfiguration(id, conf);
   monaco.languages.registerFoldingRangeProvider(id, {
     provideFoldingRanges: async model => {
       return [

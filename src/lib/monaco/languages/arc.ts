@@ -4,11 +4,11 @@ import getRegexRanges from '../ranges/regex';
 
 const registerArcLanguage = (): void => {
   const id = 'arc';
-  const conf = {
+  const conf: monaco.languages.LanguageConfiguration = {
     autoClosingPairs: [{ open: '"', close: '"' }],
     surroundingPairs: [{ open: '"', close: '"' }],
   };
-  const def = {
+  const def: monaco.languages.IMonarchLanguage = {
     tokenPostfix: '.arc',
     keywords: ['true', 'false'],
 
@@ -65,9 +65,8 @@ const registerArcLanguage = (): void => {
   };
 
   monaco.languages.register({ id });
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  monaco.languages.setMonarchTokensProvider(id, def as any);
-  monaco.languages.setLanguageConfiguration(id, conf as any);
+  monaco.languages.setMonarchTokensProvider(id, def);
+  monaco.languages.setLanguageConfiguration(id, conf);
   monaco.languages.registerFoldingRangeProvider(id, {
     provideFoldingRanges: async model => {
       return [...(await getIndentRanges(model)), ...(await getRegexRanges(model, /^\s*@/))];

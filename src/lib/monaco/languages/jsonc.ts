@@ -2,28 +2,25 @@ import * as monaco from 'monaco-editor';
 
 const registerJSONCLanguage = (): void => {
   const id = 'jsonc';
-  const conf = {
+  const conf: monaco.languages.LanguageConfiguration = {
     brackets: [
       ['{', '}'],
       ['[', ']'],
-      ['(', ')'],
     ],
     autoClosingPairs: [
       { open: '{', close: '}' },
       { open: '[', close: ']' },
-      { open: '(', close: ')' },
       { open: '"', close: '"' },
       { open: "'", close: "'" },
     ],
     surroundingPairs: [
       { open: '{', close: '}' },
       { open: '[', close: ']' },
-      { open: '(', close: ')' },
       { open: '"', close: '"' },
       { open: "'", close: "'" },
     ],
   };
-  const def = {
+  const def: monaco.languages.IMonarchLanguage = {
     tokenPostfix: '.jsonc',
     brackets: [
       { token: 'delimiter.bracket', open: '{', close: '}' },
@@ -112,10 +109,8 @@ const registerJSONCLanguage = (): void => {
   };
 
   monaco.languages.register({ id });
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  monaco.languages.setMonarchTokensProvider(id, def as any);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  monaco.languages.setLanguageConfiguration(id, conf as any);
+  monaco.languages.setMonarchTokensProvider(id, def);
+  monaco.languages.setLanguageConfiguration(id, conf);
 };
 
 export default registerJSONCLanguage;

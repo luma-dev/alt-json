@@ -1,5 +1,5 @@
-declare function parse(s: string): JSONValue;
-declare function stringify(v: JSONValue): string;
+declare function parse(s: string): string;
+declare function stringify(v: string): string;
 
 export default {
   parse,

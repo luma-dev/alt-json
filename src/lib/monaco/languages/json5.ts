@@ -2,28 +2,25 @@ import * as monaco from 'monaco-editor';
 
 const registerJSON5Language = (): void => {
   const id = 'json5';
-  const conf = {
+  const conf: monaco.languages.LanguageConfiguration = {
     brackets: [
       ['{', '}'],
       ['[', ']'],
-      ['(', ')'],
     ],
     autoClosingPairs: [
       { open: '{', close: '}' },
       { open: '[', close: ']' },
-      { open: '(', close: ')' },
       { open: '"', close: '"' },
       { open: "'", close: "'" },
     ],
     surroundingPairs: [
       { open: '{', close: '}' },
       { open: '[', close: ']' },
-      { open: '(', close: ')' },
       { open: '"', close: '"' },
       { open: "'", close: "'" },
     ],
   };
-  const def = {
+  const def: monaco.languages.IMonarchLanguage = {
     tokenPostfix: '.json5',
     brackets: [
       { token: 'delimiter.bracket', open: '{', close: '}' },
