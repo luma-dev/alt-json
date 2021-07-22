@@ -206,7 +206,7 @@ const registerTOMLLanguage = (): void => {
       return [
         ...(await getIndentRanges(model)),
         ...(await getRegexRanges(model, /^\s*\[\[/)),
-        ...(await getRegexRanges(model, /^\s*\[\s*[^[]/)),
+        ...(await getRegexRanges(model, /^\s*\[[^[]/, /^\s*\[/)),
       ];
     },
   });

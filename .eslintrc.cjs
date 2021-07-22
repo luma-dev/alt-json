@@ -6,16 +6,6 @@ module.exports = {
 
   overrides: [
     {
-      files: '*.html',
-      plugins: ['html', 'prettier'],
-      parserOptions: {
-        sourceType: 'module',
-      },
-      settings: {
-        'html/report-bad-indent': 'error',
-      },
-    },
-    {
       files: '*.json',
       plugins: ['json-format'],
 
