@@ -13,7 +13,7 @@ const stringifyArcString = (value: string): string => {
   if (/\\$/.test(value)) throw new StringifyError('String literal that ends with backslash is not supported');
   if (/["\n\t\r\b\f]/.test(value))
     throw new StringifyError('String litral including characters that should be escaped is not supported');
-  if (/^[a-zA-Z0-9$_*()?"'^!=|:&`~+-]+$/.test(value) && !/^".*"$|^\s.*$|^.*\s$/.test(value)) return value;
+  if (/^[a-zA-Z0-9$_*()?"'^!=|:&`~+/-]+$/.test(value) && !/^".*"$|^\s.*$|^.*\s$/.test(value)) return value;
   const guess = JSON.stringify(value).replace(/\\\\/g, '\\');
   if (guess.length === value.length + 2) return guess;
   throw new StringifyError('String literal that includes non-graphical Unicode character is not supported');
