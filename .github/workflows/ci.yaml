@@ -17,13 +17,13 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: 14
+          node-version: 12
       - uses: actions/cache@v2
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-14-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-node-12-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-node-14-
+            ${{ runner.os }}-node-12-
       - run: npm ci
   test:
     needs: [cache]
@@ -33,17 +33,18 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: 14
+          node-version: 12
       - uses: actions/cache@v2
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-14-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-node-12-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-node-14-
+            ${{ runner.os }}-node-12-
       - run: npm ci
       - run: npm run lint
       - run: npm test
   release:
+    if: ${{ env.GITHUB_EVENT_NAME == 'push' || env.GITHUB_EVENT_NAME == 'workflow_dispatch' }}
     needs: [cache, test]
     name: Release
     runs-on: ubuntu-latest
@@ -51,13 +52,13 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: 14
+          node-version: 12
       - uses: actions/cache@v2
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-14-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-node-12-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-node-14-
+            ${{ runner.os }}-node-12-
       - run: npm ci
       - run: npm run build
       - uses: peaceiris/actions-gh-pages@v3
