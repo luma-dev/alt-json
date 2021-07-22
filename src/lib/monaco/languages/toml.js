@@ -75,7 +75,6 @@ const registerTOMLLanguage = () => {
             {token: "white"},
             {
               token: "bracket.square",
-              log: "here1",
               next: "@valueArrayBody"
             }
           ]
