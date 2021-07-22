@@ -1,0 +1,11 @@
+{
+  "imports": {
+    "@architect/parser": "./@architect/parser.js",
+    "@iarna/toml": "./@iarna/toml.js",
+    "json5": "./json5.js",
+    "jsonc-parser": "./jsonc-parser.js",
+    "monaco-editor": "./monaco-editor.js",
+    "monaco-editor/esm/vs/editor/contrib/folding/indentRangeProvider": "./monaco-editor/esm/vs/editor/contrib/folding/indentRangeProvider.js",
+    "yaml": "./yaml.js"
+  }
+}
