@@ -45,6 +45,7 @@ jobs:
       - run: npm run lint
       - run: npm test
   deploy:
+    if: ${{ github.action == 'push' || github.action == 'workflow_dispatch' }}
     needs: [cache, test]
     name: Deploy
     runs-on: ubuntu-20.04
@@ -62,7 +63,6 @@ jobs:
       - run: npm ci
       - run: npm run build
       - uses: peaceiris/actions-gh-pages@v3
-        if: ${{ env.GITHUB_EVENT_NAME == 'push' || env.GITHUB_EVENT_NAME == 'workflow_dispatch' }}
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build
