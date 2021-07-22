@@ -12,7 +12,7 @@ on:
 jobs:
   cache:
     name: Cache
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -28,7 +28,7 @@ jobs:
   test:
     needs: [cache]
     name: Test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -44,10 +44,9 @@ jobs:
       - run: npm run lint
       - run: npm test
   release:
-    if: ${{ env.GITHUB_EVENT_NAME == 'push' || env.GITHUB_EVENT_NAME == 'workflow_dispatch' }}
     needs: [cache, test]
     name: Release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -62,6 +61,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - uses: peaceiris/actions-gh-pages@v3
+        if: ${{ env.GITHUB_EVENT_NAME == 'push' || env.GITHUB_EVENT_NAME == 'workflow_dispatch' }}
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build
