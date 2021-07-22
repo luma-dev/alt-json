@@ -101,6 +101,28 @@ interface EditorSet {
   defaultLang: string;
 }
 
+const setCode = (set: EditorSet, code: string, pushHistory: boolean): void => {
+  const model = set.editor.getModel();
+  if (!model) return;
+  if (pushHistory) {
+    set.editor.executeEdits(null, [
+      {
+        range: model.getFullModelRange(),
+        text: code,
+      },
+    ]);
+    set.editor.setSelection({
+      startLineNumber: 1,
+      startColumn: 1,
+      endLineNumber: 1,
+      endColumn: 1,
+    });
+    set.editor.pushUndoStop();
+  } else {
+    model.setValue(code);
+  }
+};
+
 const initEditor = (
   selectId: string,
   editorId: string,
@@ -195,13 +217,18 @@ const main = async (): Promise<void> => {
 
   greeting();
 
-  let lastValid: string | null = localStorage.getItem(localStorageKeys.lastValid);
-  let lastLang: string | null = localStorage.getItem(localStorageKeys.lastLang);
-  let lastCode: string | null = localStorage.getItem(localStorageKeys.lastCode);
+  let lastValid: string | null = JSON.stringify(defaultJSON, undefined, 2);
+  let lastLang: string | null = null;
+  let lastCode: string | null = null;
 
-  if (lastValid === null) {
-    lastValid = JSON.stringify(defaultJSON, undefined, 2);
-  }
+  const restoreLastValid = (): void => {
+    const saved = localStorage.getItem(localStorageKeys.lastValid);
+    if (saved !== null) {
+      lastValid = saved;
+    }
+    lastLang = localStorage.getItem(localStorageKeys.lastLang);
+    lastCode = localStorage.getItem(localStorageKeys.lastCode);
+  };
 
   expose({ monaco });
   initMonaco();
@@ -212,13 +239,13 @@ const main = async (): Promise<void> => {
   const { editor: editorLeft } = left;
   const { editor: editorRight } = right;
 
-  const update = (set: EditorSet) => {
+  const update = (set: EditorSet, pushHistory: boolean): void => {
     const model = set.editor.getModel();
     if (!model) return;
     try {
       const lang = getLang(set);
       if (lastLang === lang && lastCode !== null) {
-        model.setValue(lastCode);
+        setCode(set, lastCode, pushHistory);
         return;
       }
       if (lastValid === null) return;
@@ -244,7 +271,7 @@ const main = async (): Promise<void> => {
           return `Error while converting JSON to string:\n${e}`;
         }
       })();
-      model.setValue(code);
+      setCode(set, code, pushHistory);
     } catch (e: unknown) {
       if (import.meta.env.MODE === 'development') {
         // eslint-disable-next-line no-console
@@ -256,10 +283,7 @@ const main = async (): Promise<void> => {
   expose({ editorLeft, editorRight });
 
   let handling = false;
-  [
-    [left, right],
-    [right, left],
-  ].forEach(([set, another]) => {
+  [left, right].forEach(set => {
     {
       handling = true;
       try {
@@ -269,7 +293,27 @@ const main = async (): Promise<void> => {
         } else {
           setLang(set, lang);
         }
-        update(set);
+        update(set, true);
+      } catch (e: unknown) {
+        if (import.meta.env.MODE === 'development') {
+          // eslint-disable-next-line no-console
+          console.error(e);
+        }
+      } finally {
+        handling = false;
+      }
+    }
+  });
+
+  [
+    [left, right],
+    [right, left],
+  ].forEach(([set, another]) => {
+    {
+      handling = true;
+      try {
+        restoreLastValid();
+        update(set, true);
         updateErrors(set);
       } catch (e: unknown) {
         if (import.meta.env.MODE === 'development') {
@@ -297,7 +341,7 @@ const main = async (): Promise<void> => {
         if (valid === null) return;
         lastValid = valid;
         localStorage.setItem(localStorageKeys.lastValid, lastValid);
-        update(another);
+        update(another, true);
       } finally {
         handling = false;
       }
@@ -309,7 +353,7 @@ const main = async (): Promise<void> => {
       try {
         const lang = getLang(set);
         setLang(set, lang);
-        update(set);
+        update(set, false);
       } finally {
         handling = false;
       }
