@@ -41,11 +41,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-14-
       - run: npm ci
+      - run: npm run prebuild
       - run: npm run lint
       - run: npm test
-  release:
+  deploy:
     needs: [cache, test]
-    name: Release
+    name: Deploy
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
