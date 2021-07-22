@@ -1,28 +1,28 @@
 import * as Architect from "../../../_snowpack/pkg/@architect/parser.js";
-class StringifyError extends Error {
+class ArchitectStringifyError extends Error {
   constructor() {
     super(...arguments);
-    this.name = "StringifyError";
+    this.name = "ArchitectStringifyError";
   }
 }
 const stringifyArcString = (value) => {
   const f = Number.parseFloat(value);
-  if (Number.isNaN(f) && Number.isFinite(f))
+  if (!Number.isNaN(f) && Number.isFinite(f))
     return JSON.stringify(value);
   if (value === "true")
     return '"true"';
   if (value === "false")
     return '"false"';
   if (/\\$/.test(value))
-    throw new StringifyError("String literal that ends with backslash is not supported");
+    throw new ArchitectStringifyError("String literal that ends with backslash is not supported");
   if (/["\n\t\r\b\f]/.test(value))
-    throw new StringifyError("String litral including characters that should be escaped is not supported");
+    throw new ArchitectStringifyError("String literal including characters that should be escaped is not supported");
   if (/^[a-zA-Z0-9$_*()?"'^!=|:&`~+/-]+$/.test(value) && !/^".*"$|^\s.*$|^.*\s$/.test(value))
     return value;
   const guess = JSON.stringify(value).replace(/\\\\/g, "\\");
   if (guess.length === value.length + 2)
     return guess;
-  throw new StringifyError("String literal that includes non-graphical Unicode character is not supported");
+  throw new ArchitectStringifyError("String literal that includes non-graphical Unicode character is not supported");
 };
 const stringifyArcLiteralArray = (value) => {
   if (value.every((e) => typeof e === "string" || typeof e === "number" || typeof e === "boolean")) {
@@ -33,7 +33,7 @@ const stringifyArcLiteralArray = (value) => {
     });
     return arr;
   }
-  throw new StringifyError("Architect does not support array including object that types is neigther string, number nor boolean for entries");
+  throw new ArchitectStringifyError("Architect does not support array including object that types is neighther string, number nor boolean for entries");
 };
 const stringifyArcEntryRecord = (value) => {
   if (value === null)
@@ -50,7 +50,7 @@ const stringifyArcEntryRecord = (value) => {
   const records = Object.entries(value).map(([rKey, rVal]) => {
     const str = (() => {
       if (rVal === null)
-        throw new StringifyError("Architect does not support null for each record");
+        throw new ArchitectStringifyError("Architect does not support null for each record");
       if (typeof rVal === "string")
         return stringifyArcString(rVal);
       if (typeof rVal === "number")
@@ -60,7 +60,7 @@ const stringifyArcEntryRecord = (value) => {
       if (Array.isArray(rVal)) {
         return stringifyArcLiteralArray(rVal).join(" ");
       }
-      throw new StringifyError("Architect does not support object for each record");
+      throw new ArchitectStringifyError("Architect does not support object for each record");
     })();
     if (str === "")
       return stringifyArcString(rKey);
@@ -84,6 +84,17 @@ ${stringifyArcEntryRecord(val).map((e) => `  ${e}`).join("\n")}`);
   return tables.join("\n");
 };
 const stringifyArcSection = (key, value) => {
+  if (value === null)
+    return "# Architect does not support null for section value";
+  if (typeof value === "string")
+    return `@${key}
+${stringifyArcString(value)}`;
+  if (typeof value === "number")
+    return `@${key}
+${JSON.stringify(value)}`;
+  if (typeof value === "boolean")
+    return `@${key}
+${JSON.stringify(value)}`;
   if (!/^[a-zA-Z0-9_-]+$/.test(key)) {
     return `# Section name ${JSON.stringify(key)} is invalid`;
   }
@@ -94,7 +105,7 @@ const stringifyArcSection = (key, value) => {
     try {
       return stringifyArcEntry(el);
     } catch (e) {
-      if (e instanceof StringifyError) {
+      if (e instanceof ArchitectStringifyError) {
         return `# ${e.message}`;
       }
       throw e;

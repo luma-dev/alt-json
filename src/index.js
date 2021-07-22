@@ -87,6 +87,28 @@ const initTheme = () => {
     updateTheme(getTheme());
   });
 };
+const setCode = (set, code, pushHistory) => {
+  const model = set.editor.getModel();
+  if (!model)
+    return;
+  if (pushHistory) {
+    set.editor.executeEdits(null, [
+      {
+        range: model.getFullModelRange(),
+        text: code
+      }
+    ]);
+    set.editor.setSelection({
+      startLineNumber: 1,
+      startColumn: 1,
+      endLineNumber: 1,
+      endColumn: 1
+    });
+    set.editor.pushUndoStop();
+  } else {
+    model.setValue(code);
+  }
+};
 const initEditor = (selectId, editorId, npmId, keyLang, defaultLang) => {
   const selectEl = document.querySelector(`#${selectId}`);
   if (!(selectEl instanceof HTMLSelectElement)) {
@@ -165,12 +187,17 @@ const updateErrors = (set) => {
 const main = async () => {
   initTheme();
   greeting();
-  let lastValid = localStorage.getItem(localStorageKeys.lastValid);
-  let lastLang = localStorage.getItem(localStorageKeys.lastLang);
-  let lastCode = localStorage.getItem(localStorageKeys.lastCode);
-  if (lastValid === null) {
-    lastValid = JSON.stringify(defaultJSON, void 0, 2);
-  }
+  let lastValid = JSON.stringify(defaultJSON, void 0, 2);
+  let lastLang = null;
+  let lastCode = null;
+  const restoreLastValid = () => {
+    const saved = localStorage.getItem(localStorageKeys.lastValid);
+    if (saved !== null) {
+      lastValid = saved;
+    }
+    lastLang = localStorage.getItem(localStorageKeys.lastLang);
+    lastCode = localStorage.getItem(localStorageKeys.lastCode);
+  };
   expose({monaco});
   initMonaco();
   initAltJSONOptions();
@@ -178,14 +205,14 @@ const main = async () => {
   const right = initEditor("right-select", "right", "right-npm", localStorageKeys.rightLang, "yaml");
   const {editor: editorLeft} = left;
   const {editor: editorRight} = right;
-  const update = (set) => {
+  const update = (set, pushHistory) => {
     const model = set.editor.getModel();
     if (!model)
       return;
     try {
       const lang = getLang(set);
       if (lastLang === lang && lastCode !== null) {
-        model.setValue(lastCode);
+        setCode(set, lastCode, pushHistory);
         return;
       }
       if (lastValid === null)
@@ -211,7 +238,7 @@ const main = async () => {
 ${e}`;
         }
       })();
-      model.setValue(code);
+      setCode(set, code, pushHistory);
     } catch (e) {
       if (__SNOWPACK_ENV__.MODE === "development") {
         console.error(e);
@@ -220,10 +247,7 @@ ${e}`;
   };
   expose({editorLeft, editorRight});
   let handling = false;
-  [
-    [left, right],
-    [right, left]
-  ].forEach(([set, another]) => {
+  [left, right].forEach((set) => {
     {
       handling = true;
       try {
@@ -233,7 +257,25 @@ ${e}`;
         } else {
           setLang(set, lang);
         }
-        update(set);
+        update(set, true);
+      } catch (e) {
+        if (__SNOWPACK_ENV__.MODE === "development") {
+          console.error(e);
+        }
+      } finally {
+        handling = false;
+      }
+    }
+  });
+  [
+    [left, right],
+    [right, left]
+  ].forEach(([set, another]) => {
+    {
+      handling = true;
+      try {
+        restoreLastValid();
+        update(set, true);
         updateErrors(set);
       } catch (e) {
         if (__SNOWPACK_ENV__.MODE === "development") {
@@ -262,7 +304,7 @@ ${e}`;
           return;
         lastValid = valid;
         localStorage.setItem(localStorageKeys.lastValid, lastValid);
-        update(another);
+        update(another, true);
       } finally {
         handling = false;
       }
@@ -274,7 +316,7 @@ ${e}`;
       try {
         const lang = getLang(set);
         setLang(set, lang);
-        update(set);
+        update(set, false);
       } finally {
         handling = false;
       }
