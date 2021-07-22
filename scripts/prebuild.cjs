@@ -56,12 +56,6 @@ const main = async () => {
     }
   };
 
-  // await sync(
-  //   dynamicDir,
-  //   path.resolve(__dirname, '../node_modules'),
-  //   path.resolve(__dirname, '../node_modules/js-hcl-parser/dist/hcl.js'),
-  // );
-
   await sync(
     dynamicDir,
     path.resolve(__dirname, '../prebuild_types'),
