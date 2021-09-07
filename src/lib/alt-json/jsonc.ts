@@ -7,8 +7,8 @@ const jsonc: AltJSON = {
   display: 'JSONC',
   packageName: 'jsonc-parser',
   packageObject: JSONC,
-  toJSON: str => JSONC.parse(str) as JSONValue,
-  fromJSON: value => JSON.stringify(value, undefined, 2),
+  toJSON: (str) => JSONC.parse(str) as JSONValue,
+  fromJSON: (value) => JSON.stringify(value, undefined, 2),
 };
 
 export default jsonc;

@@ -35,14 +35,14 @@ const localStorageKeys = Object.freeze({
 });
 
 const convertFrom = (langFrom: string, str: string): JSONValue => {
-  const altFrom = altJSONs.find(a => a.name === langFrom);
+  const altFrom = altJSONs.find((a) => a.name === langFrom);
   if (!altFrom) throw new Error(`langFrom=${langFrom} not defined`);
   const from = altFrom.toJSON(str);
   return from;
 };
 
 const convertTo = (json: ReadonlyJSONValue, langTo: string): string => {
-  const altTo = altJSONs.find(a => a.name === langTo);
+  const altTo = altJSONs.find((a) => a.name === langTo);
   if (!altTo) throw new Error(`langTo=${langTo} not defined`);
   const to = altTo.fromJSON(json);
   return to;
@@ -50,9 +50,7 @@ const convertTo = (json: ReadonlyJSONValue, langTo: string): string => {
 
 let theme = localStorage.getItem(localStorageKeys.theme);
 
-const getMonacoTheme = (isDark: boolean): string => {
-  return isDark ? lumaDarkThemeName : lumaLightThemeName;
-};
+const getMonacoTheme = (isDark: boolean): string => (isDark ? lumaDarkThemeName : lumaLightThemeName);
 
 const updateTheme = (isDark: boolean): void => {
   if (isDark) {
@@ -170,7 +168,7 @@ const initEditor = (
 const setLang = (set: EditorSet, lang: string): void => {
   /* eslint-disable no-param-reassign */
   if (set.selectEl.value !== lang) set.selectEl.value = lang;
-  const alt = altJSONs.find(a => a.name === lang);
+  const alt = altJSONs.find((a) => a.name === lang);
   const model = set.editor.getModel();
   if (!model) return;
   if (alt && alt.packageName) {
@@ -185,9 +183,7 @@ const setLang = (set: EditorSet, lang: string): void => {
   /* eslint-enable no-param-reassign */
 };
 
-const getLang = (set: EditorSet): string => {
-  return set.selectEl.value;
-};
+const getLang = (set: EditorSet): string => set.selectEl.value;
 
 const updateErrors = (set: EditorSet): string | null => {
   const model = set.editor.getModel();
@@ -283,7 +279,7 @@ const main = async (): Promise<void> => {
   expose({ editorLeft, editorRight });
 
   let handling = false;
-  [left, right].forEach(set => {
+  [left, right].forEach((set) => {
     {
       handling = true;
       try {

@@ -25,7 +25,7 @@ const stringifyArcLiteralArray = (value: unknown[]): string[] => {
       (e): e is string | number | boolean => typeof e === 'string' || typeof e === 'number' || typeof e === 'boolean',
     )
   ) {
-    const arr = value.map(e => {
+    const arr = value.map((e) => {
       if (typeof e === 'string') return stringifyArcString(e);
       return JSON.stringify(e);
     });
@@ -104,7 +104,7 @@ const stringifyArcEntry = (value: unknown): string => {
   const tables = Object.entries(value).map(
     ([key, val]) =>
       `${key}\n${stringifyArcEntryRecord(val)
-        .map(e => `  ${e}`)
+        .map((e) => `  ${e}`)
         .join('\n')}`,
   );
   return tables.join('\n');
@@ -121,7 +121,7 @@ const stringifyArcSection = (key: string, value: unknown): string => {
   if (!Array.isArray(value)) {
     return `# [@${key}] Architect does not support non-array for root of section`;
   }
-  const body = value.map(el => {
+  const body = value.map((el) => {
     try {
       return stringifyArcEntry(el);
     } catch (e: unknown) {
@@ -150,8 +150,8 @@ const arc: AltJSON = {
   display: 'Architect',
   packageName: '@architect/parser',
   packageObject: { Architect, safeStringifyArc },
-  toJSON: str => Architect.default(str),
-  fromJSON: value => safeStringifyArc(value),
+  toJSON: (str) => Architect.default(str),
+  fromJSON: (value) => safeStringifyArc(value),
 };
 
 export default arc;

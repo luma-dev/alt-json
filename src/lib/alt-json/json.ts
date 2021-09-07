@@ -6,8 +6,8 @@ const json: AltJSON = {
   display: 'JSON',
   packageName: null,
   packageObject: JSON,
-  toJSON: str => JSON.parse(str),
-  fromJSON: value => JSON.stringify(value, undefined, 2),
+  toJSON: (str) => JSON.parse(str),
+  fromJSON: (value) => JSON.stringify(value, undefined, 2),
 };
 
 export default json;

@@ -68,9 +68,10 @@ const registerArcLanguage = (): void => {
   monaco.languages.setMonarchTokensProvider(id, def);
   monaco.languages.setLanguageConfiguration(id, conf);
   monaco.languages.registerFoldingRangeProvider(id, {
-    provideFoldingRanges: async model => {
-      return [...(await getIndentRanges(model)), ...(await getRegexRanges(model, /^\s*@/))];
-    },
+    provideFoldingRanges: async (model) => [
+      ...(await getIndentRanges(model)),
+      ...(await getRegexRanges(model, /^\s*@/)),
+    ],
   });
 };
 

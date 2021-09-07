@@ -7,8 +7,8 @@ const toml: AltJSON = {
   display: 'TOML',
   packageName: '@iarna/toml',
   packageObject: TOML,
-  toJSON: str => TOML.parse(str) as JSONValue,
-  fromJSON: value => {
+  toJSON: (str) => TOML.parse(str) as JSONValue,
+  fromJSON: (value) => {
     if (value === null) return '# TOML does not support top-level null';
     if (typeof value === 'string') return '# TOML does not support top-level string';
     if (typeof value === 'number') return '# TOML does not support top-level number';

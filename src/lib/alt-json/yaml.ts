@@ -7,8 +7,8 @@ const yaml: AltJSON = {
   display: 'YAML',
   packageName: 'yaml',
   packageObject: YAML,
-  toJSON: str => YAML.parse(str) as JSONValue,
-  fromJSON: value => YAML.stringify(value),
+  toJSON: (str) => YAML.parse(str) as JSONValue,
+  fromJSON: (value) => YAML.stringify(value),
 };
 
 export default yaml;

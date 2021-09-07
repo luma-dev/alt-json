@@ -27,7 +27,7 @@ const exposeNotice = (name: string, obj: unknown): void => {
 };
 
 export const expose = (obj: { [key: string]: unknown }): void => {
-  Object.keys(obj).forEach(key => {
+  Object.keys(obj).forEach((key) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (window as any)[key] = obj[key];
     exposeNotice(key, obj[key]);
@@ -35,7 +35,7 @@ export const expose = (obj: { [key: string]: unknown }): void => {
 };
 
 export const exposeAllAltJSONs = (): void => {
-  altJSONs.forEach(a => {
+  altJSONs.forEach((a) => {
     expose({
       [a.name]: a.packageObject,
     });

@@ -1,13 +1,11 @@
 import * as monaco from 'monaco-editor';
 
-export const getDarkTheme = (): monaco.editor.IStandaloneThemeData => {
-  return {
-    base: 'vs-dark',
-    inherit: true,
-    rules: [{ token: 'string.escape', foreground: '2de4ea' }],
-    colors: {},
-  };
-};
+export const getDarkTheme = (): monaco.editor.IStandaloneThemeData => ({
+  base: 'vs-dark',
+  inherit: true,
+  rules: [{ token: 'string.escape', foreground: '2de4ea' }],
+  colors: {},
+});
 
 export const lumaDarkThemeName = 'luma-dark';
 
