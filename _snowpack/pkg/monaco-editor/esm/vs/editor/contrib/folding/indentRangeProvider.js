@@ -1,2 +1,2 @@
-export { cJ as IndentRangeProvider } from '../../../../../../common/indentRangeProvider-881f1573.js';
+export { cJ as IndentRangeProvider } from '../../../../../../common/indentRangeProvider-3b97c209.js';
 import '../../../../../../common/process-c22ef109.js';
